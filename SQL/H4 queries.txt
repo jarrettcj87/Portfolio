@@ -1,0 +1,124 @@
+#2
+select b.title, ba.author_name
+from book b, book_authors ba, book_loans bl
+where b.book_id = ba.book_id
+	and bl.book_id = b.book_id
+	and bl.branch_id = 7;
+    
+
+
+# 3
+select r.name
+from borrower r, book_loans bl
+where r.card_no = bl.card_no
+	and bl.branch_id = 4;
+
+
+#4  
+      
+select b.title
+from book_copies bc1, book_copies bc2, book b
+where bc1.book_id = bc2.book_id
+		and b.book_id = bc1.book_id
+		and bc1.branch_id = 5
+		and bc2.branch_id = 7
+		and bc1.no_of_copies > bc2.no_of_copies;
+     
+     
+select *
+from book_copies
+order by branch_id;
+      
+  
+#subquery?
+#get num of copies on one row join with self                                                                                                                                                                                                                                                                     
+
+#5
+select lb.branch_name
+from library_branch lb
+where lb.branch_id NOT IN (select bc.branch_id
+						from book b, book_authors ba, book_copies bc
+						where author_name = 'JK Rowling'
+						and b.book_id = ba.book_id
+						and bc.book_id = b.book_id);
+                            
+
+select bc.branch_id
+from book b, book_authors ba, book_copies bc
+where author_name = 'JK Rowling'
+	and b.book_id = ba.book_id
+    and bc.book_id = b.book_id;
+
+
+
+#6
+#try sub query?
+    
+    
+select lb.branch_id, sum(bc.no_of_copies)
+from book_copies bc, book b, publisher p, library_branch lb
+where p.name = 'Scholastic'
+	and b.publisher_name = p.name
+	and bc.book_id = b.book_id
+    and lb.branch_id = bc.branch_id
+    group by lb.branch_id
+    having count(bc.no_of_copies) >=2;
+   
+
+   
+
+#7
+select r.card_no
+from borrower r, book_loans bl
+where r.card_no = bl.card_no
+	and bl.book_id = 4006
+    and r.card_no NOT IN (select r.card_no
+							from borrower r, book_loans bl, book b, book_authors ba
+							where r.card_no = bl.card_no
+								and bl.book_id = b.book_id
+								and b.book_id = ba.book_id
+								and ba.author_name = 'JK Rowling');
+
+select r.card_no
+from borrower r, book_loans bl, book b, book_authors ba
+where r.card_no = bl.card_no
+	and bl.book_id = b.book_id
+    and b.book_id = ba.book_id
+    and ba.author_name = 'JK Rowling';
+
+
+select ba.book_id
+from book_authors ba
+where author_name = 'JK Rowling';
+
+select r.card_no
+from borrower r, book_loans bl
+where r.card_no = bl.card_no
+	and bl.book_id = 4006;
+    
+
+select *
+from book_loans
+order by (card_no);
+
+##8
+
+select r.name
+from borrower r
+		where NOT EXISTS (select b.book_id
+						  from book b, book_authors ba
+                          where b.book_id = ba.book_id
+                          and ba.author_name = 'JK Rowling'
+						  and NOT EXISTS  		(select bl.book_id
+										        from book_loans bl
+                                                where b.book_id = bl.book_id
+												and bl.card_no = r.card_no));
+
+
+select *
+from book_copies;
+
+select *
+from book_loans bl
+order by bl.card_no;
+

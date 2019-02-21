@@ -1,0 +1,157 @@
+## H4 schema and data
+
+
+DROP TABLE IF EXISTS publisher;
+DROP TABLE IF EXISTS book;
+DROP TABLE IF EXISTS book_authors;
+DROP TABLE IF EXISTS library_branch;
+DROP TABLE IF EXISTS book_copies;
+DROP TABLE IF EXISTS borrower;
+DROP TABLE IF EXISTS book_loans;
+
+
+CREATE TABLE publisher (
+	name varchar(50),
+	address varchar(50),
+	phone char(10) not null,
+	primary key (name)
+    
+);
+
+INSERT INTO publisher VALUES('Scholastic','123 what','9195551001');
+INSERT INTO publisher VALUES('McGraw Hill','3 nope','9195551002');
+INSERT INTO publisher VALUES('Random House','666 st','9195551003');
+INSERT INTO publisher VALUES('Penguin','098 go','9195551004');
+
+CREATE TABLE book (
+	book_id int,
+	title varchar(200),
+	publisher_name varchar(50),
+	primary key (book_id),
+    foreign key (publisher_name) references publisher(name)
+);
+
+INSERT INTO book VALUES(4001,'Harry Potter and the Deadly Database','Scholastic');
+INSERT INTO book VALUES(4002,'Harry Potter and the Evil Entities','Scholastic');
+INSERT INTO book VALUES(4003,'Harry Potter and the Spurious Tuples','Scholastic');
+INSERT INTO book VALUES(4004,'Harry Potter and the Cardinality Constraints','Scholastic');
+INSERT INTO book VALUES(4006,'A History of Databases in Western Civilization','McGraw Hill');
+INSERT INTO book VALUES(4007,'Databases of the Rich and Famous','Random House');
+INSERT INTO book VALUES(4008,'Databases of the Old West','Penguin');
+INSERT INTO book VALUES(4009,'Little Red Riding Hood and the Big Bad SQL Query','Penguin');
+
+CREATE TABLE book_authors(
+	book_id int,
+	author_name varchar(50),
+	primary key (book_id, author_name),
+    foreign key (book_id) references book(book_id)
+    
+);
+
+INSERT INTO book_authors VALUES(4001,'JK Rowling');
+INSERT INTO book_authors VALUES(4002,'JK Rowling');
+INSERT INTO book_authors VALUES(4003,'JK Rowling');
+INSERT INTO book_authors VALUES(4004,'JK Rowling');
+INSERT INTO book_authors VALUES(4006,'Donald Trump');
+INSERT INTO book_authors VALUES(4007,'Donald Trump');
+INSERT INTO book_authors VALUES(4008,'Grimm');
+
+
+CREATE TABLE library_branch (
+	branch_id int,
+	branch_name varchar(20),
+	address varchar(30),
+	primary key (branch_id)
+);
+
+INSERT INTO library_branch VALUES(1,'Mebane','1111 Pablo');
+INSERT INTO library_branch VALUES(2,'Burlington','2222 North');
+INSERT INTO library_branch VALUES(3,'Chapel Hill','3333 South');
+INSERT INTO library_branch VALUES(4,'Graham','4444 East');
+INSERT INTO library_branch VALUES(5,'Sax','5555 West');
+INSERT INTO library_branch VALUES(6,'New Hope','6666 Home');
+INSERT INTO library_branch VALUES(7,'Belmont','7777 San Juan');
+INSERT INTO library_branch VALUES(8,'Greensboro','8888 Mexico');
+
+
+
+
+CREATE TABLE book_copies (
+	book_id int,
+    branch_id int,
+	no_of_copies int,
+	primary key (book_id, branch_id),
+    foreign key (book_id) references book(book_id),
+	foreign key (branch_id) references library_branch(branch_id)
+    
+);
+
+INSERT INTO book_copies VALUES(4001,1,2);
+INSERT INTO book_copies VALUES(4002,1,1);
+INSERT INTO book_copies VALUES(4003,2,5);
+INSERT INTO book_copies VALUES(4004,2,2);
+INSERT INTO book_copies VALUES(4006,3,1);
+INSERT INTO book_copies VALUES(4007,3,1);
+INSERT INTO book_copies VALUES(4008,4,3);
+INSERT INTO book_copies VALUES(4009,4,1);
+INSERT INTO book_copies VALUES(4001,5,1);
+INSERT INTO book_copies VALUES(4002,5,10);
+INSERT INTO book_copies VALUES(4002,7,6);
+INSERT INTO book_copies VALUES(4003,7,2);
+INSERT INTO book_copies VALUES(4004,6,3);
+INSERT INTO book_copies VALUES(4006,7,3);
+INSERT INTO book_copies VALUES(4007,8,1);
+INSERT INTO book_copies VALUES(4008,2,1);
+
+
+
+CREATE TABLE borrower (
+	card_no int,
+	name varchar(20),
+	address varchar(30),
+    phone char(10) not null,
+	primary key (card_no)
+);
+
+INSERT INTO borrower VALUES(1001,'Frasier Crane','abc', '9191231232');
+INSERT INTO borrower VALUES(1002,'Sam Malone','abc', '9191231232');
+INSERT INTO borrower VALUES(1003,'Diane Chambers','abc', '9191231232');
+INSERT INTO borrower VALUES(1004,'Norm Peterson','abc', '9191231232');
+INSERT INTO borrower VALUES(1005,'Cliff Clavin','abc', '9191231232');
+INSERT INTO borrower VALUES(1006,'Carla Tortelli','abc', '9191231232');
+INSERT INTO borrower VALUES(1007,'Woody Boyd','abc', '9191231232');
+INSERT INTO borrower VALUES(1008,'Rebecca Howe','abc', '9191231232');
+
+CREATE TABLE book_loans (
+	book_id int,
+	branch_id int,
+    card_no int,
+    date_out date,
+    due_date date,
+	primary key (book_id, branch_id, card_no),
+    foreign key (book_id) references book(book_id),
+	foreign key (branch_id) references library_branch(branch_id),
+    foreign key (card_no) references borrower(card_no)
+	
+);
+
+INSERT INTO book_loans VALUES(4003, 1, 1001,'2012-05-10','2012-06-10');
+INSERT INTO book_loans VALUES(4006, 2, 1002,'2012-05-10','2012-06-10');
+INSERT INTO book_loans VALUES(4008, 3, 1003,'2012-06-08','2012-07-08');
+INSERT INTO book_loans VALUES(4001, 4, 1004,'2012-03-15','2012-04-15');
+INSERT INTO book_loans VALUES(4007, 5, 1005,'2012-04-03','2012-05-03');
+INSERT INTO book_loans VALUES(4002, 6, 1006,'2012-08-22','2012-09-22');
+INSERT INTO book_loans VALUES(4008, 7, 1007,'2012-08-22','2012-09-22');
+INSERT INTO book_loans VALUES(4009, 8, 1008,'2012-07-28','2012-08-28');
+INSERT INTO book_loans VALUES(4006, 2, 1008,'2012-05-10','2012-06-10');
+INSERT INTO book_loans VALUES(4001, 2, 1008,'2012-05-10','2012-06-10');
+
+INSERT INTO book_loans VALUES(4002, 2, 1008,'2012-07-28','2012-08-28');
+INSERT INTO book_loans VALUES(4003, 2, 1008,'2012-05-10','2012-06-10');
+INSERT INTO book_loans VALUES(4004, 2, 1008,'2012-05-10','2012-06-10');
+
+INSERT INTO book_copies VALUES(4001,2,3);
+INSERT INTO book_copies VALUES(4002,2,1);
+INSERT INTO book_copies VALUES(4003,2,1);
+INSERT INTO book_copies VALUES(4004,2,3);
+

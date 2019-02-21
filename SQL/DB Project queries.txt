@@ -1,0 +1,116 @@
+#1
+
+select m.f_name,m.l_name
+from musician m, have_roles h
+where m.mus_id = h.hmus_id
+	and h.m_role = 'drummer'
+    and m.birth_year < 1980;
+    
+#2
+
+select s.song_title, s.write_year
+from song s 
+where s.sband_name = 'The Beatles'
+	and s.write_year> 1968;
+    
+#3
+
+select b.band_name, sum(p.tickets_sold)
+from band b, perform p, venue v
+where 	b.band_name = p.pband_name
+	and p.pvenue_id = v.venue_id
+    and v.max_capacity >= 1000
+    group by b.band_name;
+    
+
+#4
+select distinct b.band_name
+from band b, perform p
+where b.band_name = pband_name
+	and b.band_name NOT IN (select p.pband_name
+						  from perform p
+						  where (perf_year > 1990 AND perf_year<1995));
+#5 - < look at ** do I need to join on band or can I join on foreign keys band name
+
+select m.f_name, m.l_name
+from musician m, have_roles h, band b
+where m.mus_id = h.hmus_id
+	and m_role = 'guitar'
+    and h.hband_name = b.band_name
+    and b.band_name NOT IN (select b.band_name
+						from perform p, venue v, band b
+						where p.pvenue_id = v.venue_id
+                        and b.band_name = p.pband_name
+						and v.v_name = 'Red Rocks');
+
+#6 joining table with itself when there are multiple keys?
+
+select b.band_name
+from band b, perform p1, perform p2
+where p1.perf_year = p2.perf_year
+	and b.band_name = p1.pband_name 
+    and b.band_name = p2.pband_name
+    and p1.tickets_sold ;
+
+select b.band_name
+from venue v, band b, perform p1, perform p2
+where v_name = 'Wolf Trap'
+	and v.venue_id = p1.pvenue_id
+    and v.venue_id = p2.pvenue_id
+    and b.band_name = p2.pband_name
+    and v.venue_id IN (
+						select b.band_name
+						from venue v, perform p, band b
+						where v_name = 'Carolina Theater'
+						and v.venue_id = p.pvenue_id
+                        and b.band_name = p.pband_name);
+
+
+					select p1.tickets_sold, p2.tickets_sold
+						from venue v, band b, perform p1, perform p2
+						where v_name = 'Carolina Theater'
+						and v.venue_id = p1.pvenue_id
+						and v.venue_id = p2.pvenue_id
+						and b.band_name = p2.pband_name
+                        and p1.perf_year = p2.perf_year;
+
+
+select b.band_name
+from band b, perform p1, perform p2
+where b.band_name = p1.pband_name
+	and b.band_name = p2.pband_name
+    and p1.perf_year = p2.perf_year
+    and p1.tickets_sold>p2.tickets_sold
+	and b.band_name IN(
+
+			select b.band_name
+			from venue v, perform p, band b
+			where v_name = 'Wolf Trap'
+			and v.venue_id = p.pvenue_id
+			and b.band_name = p.pband_name
+			and b.band_name IN (                          
+						select b.band_name
+						from venue v, perform p, band b
+						where v_name = 'Carolina Theater'
+						and v.venue_id = p.pvenue_id
+                        and b.band_name = p.pband_name));
+ 
+select b.band_name
+from band b, perform p1, perform p2
+where b.band_name = p1.pband_name
+	and b.band_name = p2.pband_name
+    and p1.perf_year = p2.perf_year
+    and p1.pvenue_id = 74
+    and p2.pvenue_id = 73
+    and p1.tickets_sold>p2.tickets_sold;
+
+ 
+ 
+#AC/DC
+#Disturbed
+#Spice Girls
+#Sum 41
+#The Beatles
+
+select *
+from perform;

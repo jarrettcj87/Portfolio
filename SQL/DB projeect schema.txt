@@ -1,0 +1,126 @@
+drop table if exists perform;
+drop table if exists have_roles;
+drop table if exists venue;
+drop table if exists song;
+drop table if exists band;
+drop table if exists musician;
+
+
+create table musician (
+	mus_id int check (mus_id >0 and mus_id<99999),
+	f_name varchar(20),
+	l_name varchar(30),
+	birth_year year,
+	primary key (mus_id)
+);
+
+
+create table band (
+	band_name varchar(40),
+	b_year year,
+	genre varchar(20),
+	primary key (band_name)
+);
+
+create table song (
+	song_id int check (song_id>0 and song_id<99999),
+	song_title varchar(30),
+	sband_name varchar(40),
+	write_year year,
+	primary key (song_id),
+	foreign key (sband_name) references band(band_name)
+);
+
+create table venue (
+	venue_id int,
+	v_name varchar(30),
+	v_state char(2),
+	v_city varchar(20),
+	max_capacity int,
+	primary key (venue_id)
+);
+
+
+create table have_roles (
+	hmus_id int check (hmus_id >0 and hmus_id<99999),
+	hband_name varchar(40),
+	m_role varchar(20),
+	start_year year,
+	end_year year,
+	check (start_year<end_year),
+	primary key (hmus_id, hband_name, m_role),
+	foreign key (hmus_id) references musician(mus_id),
+	foreign key (hband_name) references band(band_name)
+);
+
+create table perform (
+	pband_name varchar(40),
+	pvenue_id int,
+	tickets_sold int,
+	perf_year year,
+    primary key (pband_name,pvenue_id,perf_year),
+	foreign key (pvenue_id) references venue(venue_id),
+	foreign key (pband_name) references band(band_name)
+	
+);
+
+
+INSERT INTO musician (mus_id,f_name,l_name,birth_year) VALUES (101,'Homer','Simpson',1978);
+INSERT INTO musician (mus_id,f_name,l_name,birth_year) VALUES (102,'Britney','Spears',1995);
+INSERT INTO musician (mus_id,f_name,l_name,birth_year) VALUES (103,'David','Bowie',1965);
+INSERT INTO musician (mus_id,f_name,l_name,birth_year) VALUES (104,'Sam','Smith',1959);
+INSERT INTO musician (mus_id,f_name,l_name,birth_year) VALUES (105,'Tom','Delonge',1987);
+INSERT INTO musician (mus_id,f_name,l_name,birth_year) VALUES (106,'Whitney','Houston',1970);
+
+
+INSERT INTO band  (band_name,b_year,genre) VALUES ('The Beatles', 1965, 'rock');
+INSERT INTO band  (band_name,b_year,genre) VALUES ('Blink 182', 1995, 'punk');
+INSERT INTO band  (band_name,b_year,genre) VALUES ('Disturbed', 1979, 'pop');
+INSERT INTO band  (band_name,b_year,genre) VALUES ('Spice Girls', 2000, 'pop');
+INSERT INTO band  (band_name,b_year,genre) VALUES ('AC/DC', 1988, 'rock');
+INSERT INTO band  (band_name,b_year,genre) VALUES ('Sum 41', 1974, 'jazz');
+
+
+INSERT INTO song (song_id,song_title,sband_name,write_year) VALUES (70001,'First Date','Blink 182',1996);
+INSERT INTO song (song_id,song_title,sband_name,write_year) VALUES (70002,'Kiss Me','The Beatles',1970);
+INSERT INTO song (song_id,song_title,sband_name,write_year) VALUES (70003,'Sound of Silence','The Beatles',1965);
+INSERT INTO song (song_id,song_title,sband_name,write_year) VALUES (70004,'My Heart Will Go On','Sum 41',1980);
+INSERT INTO song (song_id,song_title,sband_name,write_year) VALUES (70005,'Deja Vu','Spice Girls',2001);
+INSERT INTO song (song_id,song_title,sband_name,write_year) VALUES (70006,'Closer','Disturbed',1985);
+
+
+INSERT INTO venue (venue_id,v_name,v_state,v_city,max_capacity) VALUES (71,'Cats Cradle','NC','Carrboro',200);
+INSERT INTO venue (venue_id,v_name,v_state,v_city,max_capacity) VALUES (72,'Red Rocks','CO','Mebane',5000);
+INSERT INTO venue (venue_id,v_name,v_state,v_city,max_capacity) VALUES (73,'Carolina Theater','NC','Chapel Hill',1000);
+INSERT INTO venue (venue_id,v_name,v_state,v_city,max_capacity) VALUES (74,'Wolf Trap','VA','Roanoke',1500);
+INSERT INTO venue (venue_id,v_name,v_state,v_city,max_capacity) VALUES (75,'Greene Street','NC','Greensboro',500);
+
+
+
+
+INSERT INTO have_roles (hmus_id,hband_name,m_role,start_year,end_year) VALUES (101,'The Beatles','drummer',1985,1990);
+INSERT INTO have_roles (hmus_id,hband_name,m_role,start_year,end_year) VALUES (102,'Spice Girls','vocalist',2009,2011);
+INSERT INTO have_roles (hmus_id,hband_name,m_role,start_year,end_year) VALUES (101,'The Beatles','vocalist',1991,1992);
+INSERT INTO have_roles (hmus_id,hband_name,m_role,start_year,end_year) VALUES (103,'Blink 182','guitar',1996,1998);
+INSERT INTO have_roles (hmus_id,hband_name,m_role,start_year,end_year) VALUES (104,'Disturbed','bass',1985,1989);
+INSERT INTO have_roles (hmus_id,hband_name,m_role,start_year,end_year) VALUES (105,'AC/DC','drummer',1990,2001);
+INSERT INTO have_roles (hmus_id,hband_name,m_role,start_year,end_year) VALUES (106,'Sum 41','guitar',1980,1990);
+
+
+
+
+INSERT INTO perform (pband_name,pvenue_id,tickets_sold,perf_year) VALUES ('Blink 182',71,56,1991);
+INSERT INTO perform (pband_name,pvenue_id,tickets_sold,perf_year) VALUES ('Blink 182',72,3500,1994);
+INSERT INTO perform (pband_name,pvenue_id,tickets_sold,perf_year) VALUES ('Sum 41',73,985,1988);
+INSERT INTO perform (pband_name,pvenue_id,tickets_sold,perf_year) VALUES ('Disturbed',74,1499,1985);
+INSERT INTO perform (pband_name,pvenue_id,tickets_sold,perf_year) VALUES ('Disturbed',73,999,1985);
+INSERT INTO perform (pband_name,pvenue_id,tickets_sold,perf_year) VALUES ('Spice Girls',74,1220,1996);
+INSERT INTO perform (pband_name,pvenue_id,tickets_sold,perf_year) VALUES ('Spice Girls',73,500,1996);
+
+
+
+
+
+
+
+
