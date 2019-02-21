@@ -1,0 +1,50 @@
+import pandas as pd
+import numpy as np
+from fuzzywuzzy import fuzz
+
+
+
+messy_names = pd.read_csv('12000.csv', dtype={'A': np.str, 'B': np.str})
+
+
+d = pd.read_csv('12000.csv', index_col=0, squeeze=True).to_dict()
+
+
+
+
+def match_name(key,value,dict_names, min_score=0):
+
+    # -1 score in case we don't get any matches
+        max_score = -1
+        # Returning empty name for no match as well
+        max_name = ""
+            # Iterating over all names in the other
+        count = 0
+
+
+        for k,v in dict_names.items():
+            # Finding fuzzy match score
+            score = fuzz.ratio(value,v)
+           
+
+            # Checking if we are above our threshold and have a better score
+            if (score > min_score) & (score > max_score):
+                         count += 1
+                         max_name = value
+                         max_score = score
+
+                         if max_score == 100 and key==k :
+                             pass
+
+                         else:
+                             with open('Output', 'a') as f:
+                                 print(key, ";", value, ";", k, ";", v, ";", max_score, ";", count, file=f)
+
+        return (max_name, max_score)
+
+
+open('Output', 'w').close()
+
+for key,value in d.items():
+    # Use our method to find best match, we can set a threshold here
+    match = match_name(key,value,d,70)
